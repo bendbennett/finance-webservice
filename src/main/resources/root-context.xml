@@ -1,0 +1,78 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                            http://www.springframework.org/schema/context
+                            http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                            http://www.springframework.org/schema/mvc
+                            http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+                            http://www.springframework.org/schema/cache
+                            http://www.springframework.org/schema/cache/spring-cache-3.1.xsd">
+
+    <!-- adds in specific Aspects (e.g., for logging) as they are not picked up by component scanning (see below) -->
+    <import resource="classpath:aspects-config.xml"/>
+    <!-- enables the Spring MVC @Controller programming model -->
+    <!--<beans:annotation-driven/>-->
+    <!-- component scanning to pick up all annotated classes in /extraction package -->
+    <context:component-scan base-package="zz.yy.xx.webservices.finance"/>
+    <!-- directive for property file(s) -->
+    <context:property-placeholder
+            location="classpath:database.properties, classpath:auth.properties, classpath:cache.properties"/>
+
+    <mvc:annotation-driven/>
+    <mvc:interceptors>
+        <bean class="zz.yy.xx.webservices.finance.interceptors.SessionInterceptor"/>
+    </mvc:interceptors>
+
+    <!-- adding annotation-driving caching support -->
+    <cache:annotation-driven/>
+    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
+          p:configLocation="classpath:ehcache.xml"/>
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager" p:cacheManager-ref="ehcache"/>
+
+    <!-- for autowiring RestOperations restTemplate into models -->
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate"/>
+
+    <!-- beans specifically for autowiring repository -->
+    <bean id="dataSource" class="com.microsoft.sqlserver.jdbc.SQLServerDataSource">
+        <property name="serverName" value="${finance.serverName}"/>
+        <property name="portNumber" value="${finance.portNumber}"/>
+        <property name="databaseName" value="${finance.databaseName}"/>
+        <property name="user" value="${finance.user}"/>
+        <property name="password" value="${finance.password}"/>
+    </bean>
+
+    <bean id="simpleJdbcDaoSupport" class="org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- uncommenting the following will expose ehcache MBean - visible through jconsole etc -->
+    <!-- unfortunately, this doesn't show memory usage, just cache hits, misses, number of objects in cache etc -->
+    <!-- MBean config to expose ehcache -->
+    <!-- only needed explicitly because ehcache needs it to register itself -->
+    <!--
+    <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
+        <property name="locateExistingServerIfPossible" value="true"/>
+    </bean>
+    -->
+    <!-- ehcache needs to register itself, we can't just give the bean to jmx ourselves -->
+    <!--
+    <bean id="ehCacheMBeanRegistration" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="net.sf.ehcache.management.ManagementService.registerMBeans"/>
+        <property name="arguments">
+            <list>
+                <ref bean="ehcache"/>
+                <ref bean="mbeanServer"/>
+                <value>true</value>
+                <value>true</value>
+                <value>true</value>
+                <value>true</value>
+            </list>
+        </property>
+    </bean>
+    -->
+</beans>

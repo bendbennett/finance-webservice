@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+         maxBytesLocalHeap="100M"
+         maxElementsInMemory="10000"
+         statistics="true">
+
+    <defaultCache
+            maxElementsInMemory="10000"
+            eternal="false"
+            overflowToDisk="false"
+            diskPersistent="false"
+            timeToLiveSeconds="600"
+            memoryStoreEvictionPolicy="LRU">
+    </defaultCache>
+
+    <cache name="Repository"
+           maxElementsInMemory="10000"
+           eternal="false"
+           overflowToDisk="false"
+           diskPersistent="false"
+           timeToLiveSeconds="600"
+           memoryStoreEvictionPolicy="LRU">
+    </cache>
+
+    <!--
+
+
+    <cache
+            name="Repository"
+            eternal="false"
+            maxElementsInMemory="1000"
+            overflowToDisk="false"
+            diskPersistent="false"
+            timeToIdleSeconds="60"
+            timeToLiveSeconds="300"
+            memoryStoreEvictionPolicy="LRU">
+    </cache>
+    -->
+</ehcache>

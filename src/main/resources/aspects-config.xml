@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+							http://www.springframework.org/schema/aop
+							http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+    <!-- Configuration for the aspects that apply to the application -->
+    <!-- individual beans used for logging are defined in here, not picked up by component scanning -->
+    <bean id="loggingAspects" class="zz.yy.xx.webservices.aspects.LoggingAspects">
+        <property name="logger" ref="logger"/>
+    </bean>
+
+    <!-- NOTE - value MUST be the same as logger name in log4j.xml -->
+    <!-- i.e., <property name="logName" value="zz.yy.xx.api"/> MUST be same as 	<logger name="zz.yy.xx.api"> -->
+    <bean id="logger" class="org.springframework.beans.factory.config.CommonsLogFactoryBean">
+        <property name="logName" value="zz.yy.xx.webservices.financews"/>
+    </bean>
+
+    <aop:aspectj-autoproxy />
+
+</beans>
